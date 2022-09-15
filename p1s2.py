@@ -30,7 +30,8 @@ x_test = x_test[:, :6]
 t_test = (t_test - tm)/ts
 x_test = (x_test - xm)/xs
 
-x0_test = [1 for _ in range(400)]
+N_test = len(x_test)
+x0_test = [1 for _ in range(N_test)]
 x_test = np.column_stack((x0_test, x_test))
 
 #Batch Gradient Descent
@@ -51,10 +52,10 @@ print("Weights using Batch Gradient Descent: ", w)
 print("Final Loss: ", loss)
 
 plt.figure()
-plt.scatter(np.arange(400), t_test)
+plt.scatter(np.arange(N_test), t_test)
 y_test = np.matmul(x_test,w)
-plt.scatter(np.arange(400), y_test)
-rmse = np.sqrt(np.sum(np.square(y_test - t_test))/400)
+plt.scatter(np.arange(N_test), y_test)
+rmse = np.sqrt(np.sum(np.square(y_test - t_test))/N_test)
 r2 = r2_score(t_test, y_test)
 print(rmse, r2)
 
@@ -66,12 +67,12 @@ w = np.random.rand(7)
 plt.figure()
 epochs = 1000
 for i in range(N*epochs):					#Note that we have 10'000 iterations instead of 1'000 here
-	sample = (int)(1200*np.random.random())
+	sample = (int)(N*np.random.random())
 	x_s = x[sample, :]
 	t_s = t[sample]
 	y = np.matmul(w.T, x_s)
 	diff = y-t_s
-	alpha = 0.001
+	alpha = 0.0001
 	grad = diff*x_s
 	w = w - alpha*grad
 	if (i%N == 0):
@@ -84,13 +85,46 @@ print("Weights using Stochastic Gradient Descent: ", w)
 print("Final Loss: ", loss)
 
 plt.figure()
-plt.scatter(np.arange(400), t_test)
+plt.scatter(np.arange(N_test), t_test)
 y_test = np.matmul(x_test,w)
-plt.scatter(np.arange(400), y_test)
-rmse = np.sqrt(np.sum(np.square(y_test - t_test))/400)
+plt.scatter(np.arange(N_test), y_test)
+rmse = np.sqrt(np.sum(np.square(y_test - t_test))/N_test)
 r2 = r2_score(t_test, y_test)
 print(rmse, r2)
 
-#Changing Batch sizes 
+
+
+
+#Mini Batch Gradient Descent
+w = np.random.rand(7)
+batch_sizes = [10, 60, 120, 360, 600]
+epochs=1000
+for size in batch_sizes:
+	plt.figure()
+	for i in range((N//size)*epochs):
+		sample = np.random.permutation(N)[:size]
+		x_s = x[sample]
+		t_s = t[sample]
+		y = np.matmul(x_s, w)
+		diff = y-t_s
+		alpha = 0.0001
+		grad = np.matmul(x_s.T, diff)
+		w = w - alpha*grad
+		if i%(N//size) == 0:
+			loss = np.sum(np.square(np.matmul(x,w) - t))/N
+			plt.plot (i, loss, 'r.')
+		#if (loss < 0.00001): break
+	loss = np.sum(np.square(np.matmul(x,w) - t))/N
+	print("Weights using Mini-Batch Gradient Descent, with batch size of {}: ".format(size), w)
+	print("Final Loss: ", loss)
+
+	plt.figure()
+	plt.scatter(np.arange(N_test), t_test)
+	y_test = np.matmul(x_test,w)
+	plt.scatter(np.arange(N_test), y_test)
+	rmse = np.sqrt(np.sum(np.square(y_test - t_test))/N_test)
+	r2 = r2_score(t_test, y_test)
+	print(rmse, r2)
+
 
 plt.show()
