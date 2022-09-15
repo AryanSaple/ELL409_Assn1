@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score		#REMOVE
 
 x = pd.read_csv('C:/Users/saple/Desktop/python/ELL409/Assn1/train.csv').values
 t = x[:, 6]
@@ -13,6 +12,7 @@ tm = t.mean()
 ts = t.std()
 xm = x.mean(axis=0)[np.newaxis, :]
 xs = x.std(axis=0)[np.newaxis, :]
+
 t = (t-tm)/ts
 x = (x-xm)/xs
 
@@ -22,6 +22,7 @@ x = np.column_stack((x0, x))
 # print(t[:10])
 # print(x[:10])
 
+#Loading test values
 x_test = pd.read_csv('C:/Users/saple/Desktop/python/ELL409/Assn1/test.csv').values
 t_test = x_test[:, 6]
 x_test = x_test[:, :6]
@@ -44,8 +45,8 @@ for i in range(1000):
 	loss = np.sum(np.square(diff))/N	#loss (error)
 	w = w - alpha*grad					#update
 	# print(loss, w)
-	plt.plot(i, loss , 'ro')			#plotting loss against number of iterations, making sure it is decreasing
-	if (loss < 0.01): break				#threshold for early stopping
+	plt.plot(i, loss , 'r.')			#plotting loss against number of iterations, making sure it is decreasing
+	#if (loss < 0.01): break				#threshold for early stopping
 print("Weights using Batch Gradient Descent: ", w)
 print("Final Loss: ", loss)
 
@@ -53,7 +54,7 @@ plt.figure()
 plt.scatter(np.arange(400), t_test)
 y_test = np.matmul(x_test,w)
 plt.scatter(np.arange(400), y_test)
-rmse = np.sqrt(mean_squared_error(t_test, y_test))
+rmse = np.sqrt(np.sum(np.square(y_test - t_test))/400)
 r2 = r2_score(t_test, y_test)
 print(rmse, r2)
 
@@ -63,7 +64,8 @@ print(rmse, r2)
 #Stochastic Gradient Descent
 w = np.random.rand(7)
 plt.figure()
-for i in range(10000):					#Note that we have 10'000 iterations instead of 1'000 here
+epochs = 1000
+for i in range(N*epochs):					#Note that we have 10'000 iterations instead of 1'000 here
 	sample = (int)(1200*np.random.random())
 	x_s = x[sample, :]
 	t_s = t[sample]
@@ -72,9 +74,12 @@ for i in range(10000):					#Note that we have 10'000 iterations instead of 1'000
 	alpha = 0.001
 	grad = diff*x_s
 	w = w - alpha*grad
-	loss = np.sum(np.square(np.matmul(x,w) - t))/N
-	plt.plot (i, loss, 'ro')
-	if (loss < 0.01): break
+	if (i%N == 0):
+		loss = np.sum(np.square(np.matmul(x,w) - t))/N
+		plt.plot (i, loss, 'r.')
+	#if (loss < 0.01): break
+
+loss = np.sum(np.square(np.matmul(x,w) - t))/N
 print("Weights using Stochastic Gradient Descent: ", w)
 print("Final Loss: ", loss)
 
@@ -82,7 +87,7 @@ plt.figure()
 plt.scatter(np.arange(400), t_test)
 y_test = np.matmul(x_test,w)
 plt.scatter(np.arange(400), y_test)
-rmse = np.sqrt(mean_squared_error(t_test, y_test))
+rmse = np.sqrt(np.sum(np.square(y_test - t_test))/400)
 r2 = r2_score(t_test, y_test)
 print(rmse, r2)
 
