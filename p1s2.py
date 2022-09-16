@@ -66,13 +66,13 @@ print(rmse, r2)
 w = np.random.rand(7)
 plt.figure()
 epochs = 1000
-for i in range(N*epochs):					#Note that we have 10'000 iterations instead of 1'000 here
+for i in range(N*epochs):
 	sample = (int)(N*np.random.random())
 	x_s = x[sample, :]
 	t_s = t[sample]
-	y = np.matmul(w.T, x_s)
+	y = np.matmul(x_s.T, w)
 	diff = y-t_s
-	alpha = 0.0001
+	alpha = 0.001
 	grad = diff*x_s
 	w = w - alpha*grad
 	if (i%N == 0):
@@ -96,19 +96,19 @@ print(rmse, r2)
 
 
 #Mini Batch Gradient Descent
-w = np.random.rand(7)
 batch_sizes = [10, 60, 120, 360, 600]
 epochs=1000
 for size in batch_sizes:
+	w = np.random.rand(7)
 	plt.figure()
 	for i in range((N//size)*epochs):
 		sample = np.random.permutation(N)[:size]
-		x_s = x[sample]
+		x_s = x[sample, :]
 		t_s = t[sample]
 		y = np.matmul(x_s, w)
 		diff = y-t_s
-		alpha = 0.0001
-		grad = np.matmul(x_s.T, diff)
+		alpha = 0.001 + ((size/10)*0.001)
+		grad = np.matmul(diff.T, x_s)/size
 		w = w - alpha*grad
 		if i%(N//size) == 0:
 			loss = np.sum(np.square(np.matmul(x,w) - t))/N
@@ -128,3 +128,6 @@ for size in batch_sizes:
 
 
 plt.show()
+
+
+#CHECK MATH HERE
