@@ -28,7 +28,8 @@ x_test = x_test[:, :6]
 t_test = (t_test - tm)/ts
 x_test = (x_test - xm)/xs
 
-x0_test = [1 for _ in range(400)]
+N_test = len(x_test)
+x0_test = [1 for _ in range(N_test)]
 x_test = np.column_stack((x0_test, x_test))
 
 
@@ -37,7 +38,7 @@ w = np.random.rand(7)
 plt.figure()
 epochs = 1000
 for i in range(N*epochs):					#Note that we have 10'000 iterations instead of 1'000 here
-	sample = (int)(1200*np.random.random())
+	sample = (int)(N*np.random.random())
 	x_s = x[sample, :]
 	t_s = t[sample]
 	y = np.matmul(w.T, x_s)
@@ -56,10 +57,10 @@ print("Weights using Ridge Regression: ", w)
 print("Final Loss: ", loss)
 
 plt.figure()
-plt.scatter(np.arange(400), t_test)
+plt.scatter(np.arange(N_test), t_test)
 y_test = np.matmul(x_test,w)
-plt.scatter(np.arange(400), y_test)
-rmse = np.sqrt(np.sum(np.square(y_test - t_test))/400)
+plt.scatter(np.arange(N_test), y_test)
+rmse = np.sqrt(np.sum(np.square(y_test - t_test))/N_test)
 r2 = r2_score(t_test, y_test)
 print(rmse, r2)
 
@@ -68,7 +69,7 @@ w = np.random.rand(7)
 plt.figure()
 epochs = 1000
 for i in range(N*epochs):					#Note that we have 10'000 iterations instead of 1'000 here
-	sample = (int)(1200*np.random.random())
+	sample = (int)(N*np.random.random())
 	x_s = x[sample, :]
 	t_s = t[sample]
 	y = np.matmul(w.T, x_s)
@@ -87,10 +88,10 @@ print("Weights using Lasso Regression: ", w)
 print("Final Loss: ", loss)
 
 plt.figure()
-plt.scatter(np.arange(400), t_test)
+plt.scatter(np.arange(N_test), t_test)
 y_test = np.matmul(x_test,w)
-plt.scatter(np.arange(400), y_test)
-rmse = np.sqrt(np.sum(np.square(y_test - t_test))/400)
+plt.scatter(np.arange(N_test), y_test)
+rmse = np.sqrt(np.sum(np.square(y_test - t_test))/N_test)
 r2 = r2_score(t_test, y_test)
 print(rmse, r2)
 

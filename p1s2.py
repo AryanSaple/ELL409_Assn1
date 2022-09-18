@@ -128,6 +128,3 @@ for size in batch_sizes:
 
 
 plt.show()
-
-
-#CHECK MATH HERE

@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.metrics import mean_squared_error, r2_score
 
 data = pd.read_csv('C:/Users/saple/Desktop/python/ELL409/Assn1/train.csv')
 x = data.values
@@ -29,7 +28,8 @@ x_test = x_test[:, :6]
 t_test = (t_test - tm)/ts
 x_test = (x_test - xm)/xs
 
-x0_test = [1 for _ in range(400)]
+N_test = len(x_test)
+x0_test = [1 for _ in range(N_test)]
 x_test = np.column_stack((x0_test, x_test))
 
 
@@ -37,9 +37,9 @@ x_test = np.column_stack((x0_test, x_test))
 
 w = np.random.rand(7)
 plt.figure()
-epochs = 1000
-for i in range(N*epochs):					#Note that we have 10'000 iterations instead of 1'000 here
-	sample = (int)(1200*np.random.random())
+epochs = 100
+for i in range(N*epochs):
+	sample = (int)(N*np.random.random())
 	x_s = x[sample, :]
 	t_s = t[sample]
 	y = np.matmul(w.T, x_s)
@@ -52,19 +52,17 @@ for i in range(N*epochs):					#Note that we have 10'000 iterations instead of 1'
 	w = w - alpha*grad
 	if (i%N==0):
 		loss = np.sum(np.square(np.matmul(x,w) - t))/N		#confirm this loss function
-		if (i/N <= 5): continue
 		plt.plot (i, loss, 'r.')
 	#if (loss < 0.01): break
 
-print("Weights using Ridge Regression: ", w)
+print("Weights: ", w)
 print("Final Loss: ", loss)
 
 plt.figure()
-plt.scatter(np.arange(400), t_test, color = 'blue', marker = '.')
+plt.scatter(np.arange(N_test), t_test, color = 'blue', marker = '.')
 y_test = np.matmul(x_test,w)
-plt.scatter(np.arange(400), y_test, color = 'orange', marker = '.')
-rmse = np.sqrt(np.sum(np.square(y_test - t_test))/400)
-r2 = r2_score(t_test, y_test)
-print(rmse, r2)
+plt.scatter(np.arange(N_test), y_test, color = 'orange', marker = '.')
+rmse = np.sqrt(np.sum(np.square(y_test - t_test))/N_test)
+print("Root Mean Square error on given test set: ", rmse, end='\n\n')
 
 plt.show()
